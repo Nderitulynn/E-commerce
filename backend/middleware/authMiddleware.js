@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import pool from '../config/db.js'; // make sure the path ends with .js
+import User from '../models/userModel.js';
 
 // Protect routes - verify JWT token
 export const protect = async (req, res, next) => {
@@ -8,10 +8,10 @@ export const protect = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const result = await pool.query('SELECT id, name, email, role FROM users WHERE id=$1', [decoded.id]);
-    if (!result.rows.length) return res.status(401).json({ msg: 'User not found' });
+    const user = await User.findById(decoded.id).select('name email role');
+    if (!user) return res.status(401).json({ msg: 'User not found' });
 
-    req.user = result.rows[0]; // attach user to request
+    req.user = user;
     next();
   } catch (err) {
     res.status(401).json({ msg: 'Token is not valid' });
