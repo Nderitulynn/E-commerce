@@ -14,6 +14,7 @@ const router = express.Router();
 
 // Public routes
 router.post('/register', validateRegister, registerUser);
+//});
 router.post('/login', validateLogin, loginUser);
 router.post('/logout', logoutUser);
 router.post('/forgot-password', forgotPassword);
